@@ -3,11 +3,57 @@ title: "Introduction"
 author: "Steve Pederson"
 date: "23 November 2016"
 output: 
-  ioslides_presentation: 
+  ioslides_presentation:
+    css: custom.css
+    fig_caption: yes
     keep_md: yes
+    logo: images/UoA_logo_col_vert.png
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, include = FALSE, 
+                      warning = FALSE, message = FALSE, 
+                      out.width = 800, fig.align = "center")
+```
+
+```{r, loadPackages}
+library(knitr)
+```
+
+## Who Am I? | Steve Pederson
+
+- R User for >10 years
+- Co-ordinator, Bioinformatics Hub  
+    - Level 4, Santos Petroleum Engineering Building
+
+Also helping today:
+
+- Alastair Ludington (Bioinformatics Hub)
+
+## What is R
+
+- Began as a statistical tool in the 1990s (Ross Ihaka & Robert Gentleman)
+- Evolved far beyond it's original design
+- Primarly used for analysis & graphics
+- Also growing strong "Big Data" capabilities
+
+## What is R
+
+- Can be treated as a calculator:
+
+```{r, echo=TRUE, include=TRUE, results='markup'}
+1 + 2
+```
+
+
+## What is R
+
+- Contains all mathematical functions `+`, `-`, `*`, `/`
+- Exponents are defined using `^`
+
+```{r echo=TRUE, include=TRUE, results='markup'}
+2^3
+1 + 2 - 3 * 4 / 5
 ```
 
