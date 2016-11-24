@@ -19,7 +19,7 @@ Also helping today:
 
 ## Today's Outline | Four 90 minute Sessions
 
-1. How does R even work?
+1. Introduction
 
 2. Loading Data into R
 
@@ -28,16 +28,58 @@ Also helping today:
 4. The Genomics Era
 
 
-# How Does R Even Work?
+# Introduction
 
-## What is R
+## Why use R?
 
 - Began as a statistical tool in the 1990s (Ross Ihaka & Robert Gentleman)
 - Evolved far beyond it's original design
-- Primarly used for analysis & graphics
-- Current estimates are 1 - 2 million users
+- Current estimates are ~2 million users
 
 
+
+## Why use R?
+
+- The main software/language used for analysis and visualisation of biological data (along with Python)
+- Can handle extremely large datasets  
+- We can easily perform complex analytic procedures
+- Many processes come as inbuilt functions  
+- Huge user base of biological researchers
+
+## Why use R? | Other Key Reasons
+
+- Avoids common Excel pitfalls
+- Reproducible Research
+
+## Automatic Conversion | A common Excel problem
+
+**Excel is notorious for converting values from one thing to another inappropriately.**
+
+- Gene names are often converted to dates (e.g. _SEPT9_)
+
+- Genotypes can be converted into numeric values (e.g. the homozygote "1/1")
+    
+- In `R` we generally work with plain text files.
+    
+## Reproducible Research
+
+- Research is littered with mistakes from Excel
+- Studies have made Phase III trials
+- _We have code to record and exactly repeat our analysis_
+- We can find and correct errors more easily than if they are copy/paste errors
+
+## Using R
+
+>__With power comes great responsibility - Uncle Ben__
+  
+With the extra capability R offers, we need to understand a little about:
+
+1. Data Types  
+2. Data Structures  
+
+We'll get to that later...
+
+_First, we'll just explore the `R` Console_
 
 
 ## What is R? 
@@ -147,7 +189,7 @@ log10(0.001)
 
 
 ```r
-x <- 3
+x <- 5
 ```
 
 ### 2 Key points!!!
@@ -160,11 +202,12 @@ Yes we could have written:
 
 
 ```r
-x = 3
+x = 5
 ```
 
 - The standard convention is to use `<-` 
-- It makes it clearer that you are placing a value into an object
+- This is specific to creation of a new `R` object.
+- It makes it clear **to all readers** that you are placing a value into an object
 
 ### What other use might the `=` sign have?
 
@@ -174,7 +217,7 @@ We could also have written
 
 
 ```r
-3 -> x
+5 -> x
 ```
 
 But no-one ever does...
@@ -189,7 +232,7 @@ x
 ```
 
 ```
-## [1] 3
+## [1] 5
 ```
 
 - We occasionally like to be _very specific_ and use the `print()` command
@@ -200,7 +243,7 @@ print(x)
 ```
 
 ```
-## [1] 3
+## [1] 5
 ```
 
 ## Using R objects
@@ -238,12 +281,151 @@ Let's set one up for this course: `File > New Project`
 ## Using R Studio | R Projects
 
 - Choose either a `New` or `Existing` Directory
-- Navigate to where you think is suitable for keeping the course notes
+- Navigate to somewhere you think is suitable for keeping the course notes
 - The project name will _automatically be assigned_ as the directory name
+- (These need to match)
+
+## Using R Studio
+
+1. `File` > `New File` > `R Script`  
+2. Save As `Introduction.R`
+
+## Using R Studio
+
+- Note that the directory of the project was the automatic directory opened to save the file
+- This is your working directory
 
 
 
+
+
+```r
+getwd()
+```
+
+## Using RStudio
+
+<img src="images/RStudio.png" width="800" style="display: block; margin: auto;" />
+
+## The Script Window
+
+- This is just a simple text editor.
+- We enter our commands here but they are not executed
+    - We can keep a record of __everything__ we've done
+    - We can also add comments to our code
+    - Comments start with the `#` symbol
+    - RStudio will automatically colour our code for easy reading
+
+## Using RStudio
+
+<img src="images/RStudio.png" width="800" style="display: block; margin: auto;" />
+
+## The Console
+
+- Where we execute commands
+- Is essentially the _"engine"_
+- We can execute commands directly in the `Console` or send from the `Script Window`
+
+## Executing Code from the Script Window
+
+Enter the following in the `Script Window`
+
+
+```r
+# Create our first R object
+x <- 5
+```
+
+- We have not sent this to R yet!
+    - Only the plain text exists in the Script Window
+
+## Executing Code from the Script Window
+
+- Lines of code are sent to the `Console` by either:
+    - `Ctrl + Enter`
+    - Copy & Paste into the Console
+    - Clicking the `Run` button at the top right
+
+- Try this with your code
+
+## Executing Commands from the Script Window
+
+We can view the contents of the object `x` by:
+
+- entering it's name directly in the `Console`, or 
+- entering it's name in the `Script Window` & sending it to the `Console`
+
+
+```r
+x
+print(x)
+```
+
+## The R Environment
+
+__Where have we created the object `x`?__
+
+- Is it on your hard drive somewhere?
+- Is it in a file somewhere?
+
+## The R Environment
+
+- We have placed `x` in our `R Workspace`
+- More formally known as your `Global Environment`
+
+<img src="images/EnvironmentTab.png" width="600" style="display: block; margin: auto;" />
+
+## The R Environment
+
+- The `Environment` is like your desktop
+- We keep all our relevant objects here and can save all the objects in your workspace as an `.RData` object
+
+
+```r
+save.image()
+```
+
+- Just like in Excel, we save a *workbook* with *multiple sheets*
+- Here we save a *workspace* with *multiple objects*
+- _And we can save the code use to create these objects!_
+
+## RStudio | Other Tabs and Features
+
+- Next to the `Environment` Tab is the `History` Tab
+    - Contains everything executed in the `Console`
+    - Useful for when we've been lazy
+- Best coding practice is still to enter code in the `Script Window` and execute
+
+## RStudio | Other Tabs and Features
+
+In the bottom right are a series of tabs
+
+1. `Files`: This shows your current working directory
+2. `Plots`: Every time you make a graph it appears here
+3. `Packages`: __NEVER CLICK OR UN-CLICK ANYTHING HERE__
+4. `Help`: We'll explore this later
+
+## RStudio | Other Tabs and Features
+
+- Every tab can be resized using the buttons in the top right
+- Window separators can also be be moved
+
+## RStudio | Cheatsheet and Shortcuts
+
+`Help > Cheatsheets > RStudio IDE Cheat Sheet`
+
+Page 2 has lots of hints:
+
+- `Ctrl + 1` places focus on the Script Window
+- `Ctrl + 2` places focus on the Console
+- `Ctrl + 3` places focus on the Help Tab
+
+## Morning Tea
+
+### Next:
+
+Session 2 - Loading data into R
 
 <div class="footer" style="text-align:center;width:25%">
-[Home](http://uofabioinformaticshub.github.io/RAdelaide-July-2016/)
+[Home](https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/)
 </div>
