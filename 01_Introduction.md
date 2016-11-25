@@ -1,6 +1,6 @@
-# Introduction
+# 1 - Introduction
 Steve Pederson  
-23 November 2016  
+27 November 2016  
 
 
 
@@ -21,7 +21,7 @@ Also helping today:
 
 1. Introduction
 
-2. Loading Data into R
+2. Loading Data Into R
 
 3. What have we really done?
 
@@ -257,6 +257,54 @@ x^2
 x + 1
 ```
 
+# Vectors
+
+## A Brief Introduction To Vectors
+
+- In `R` we combine many numbers together into a `vector`
+- We use the function `c()`
+- One of the most used functions in `R`
+
+
+```r
+x <- c(1, 2, 4)
+x
+```
+
+```
+## [1] 1 2 4
+```
+
+## A Brief Introduction To Vectors
+
+
+
+- We can now apply lots of functions to this vector
+- Similar to working with a column in Excel
+
+
+```r
+min(x)
+mean(x)
+sd(x)
+range(x)
+```
+
+## A Brief Introduction To Vectors
+
+- We can also perform mathematical operations on the entire `vector`
+
+
+```r
+x + 1
+sqrt(x)
+log2(x)
+```
+
+- This is one of the great strengths of `R`
+- We'll explore this in more detail after lunch...
+
+
 # Using R Studio
 
 ## Using R Studio
@@ -276,7 +324,7 @@ x + 1
 
 Let's set one up for this course: `File > New Project`
 
-<img src="images/Project.png" width="540" style="display: block; margin: auto;" />
+
 
 ## Using R Studio | R Projects
 
@@ -419,6 +467,7 @@ Page 2 has lots of hints:
 - `Ctrl + 1` places focus on the Script Window
 - `Ctrl + 2` places focus on the Console
 - `Ctrl + 3` places focus on the Help Tab
+
 
 ## Morning Tea
 

@@ -369,9 +369,10 @@ colnames(bad_colnames) <- c("rowname", "gender", "name",
                                 "weight", "height", "transport")
 ```
 
-Here we have set the column names manually...
+- Here we have set the column names manually using a character vector
+- Note that all words were quoted.
 
-## The `c()` function
+## Removing Column Names
 
 The most common function in `R` is `c()`
 
