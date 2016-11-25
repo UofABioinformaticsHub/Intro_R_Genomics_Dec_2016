@@ -1,5 +1,6 @@
 ---
 title: "2 - Loading Data Into R"
+subtitle: "BioinfoSummer Satellite R Workshop"
 author: "Steve Pederson"
 date: "27 November 2016"
 output: 
@@ -228,38 +229,17 @@ toothData <- read_csv(file = "data/toothData.csv")
 
 ## Reading Help Pages
 
-__If we had a file with 3 blank lines to start, what would our code look like?__
+__If we had a file with 3 blank lines to start, is there an argument that can help?__
 
-```{r, eval=FALSE}
-toothData <- read_csv("data/toothData.csv", ???)
-```
 
 ## Reading Help Pages
 
-__If we had a file with 3 blank lines to start, what would our code look like?__
+__If we had a file with 3 blank lines to start, is there an argument that can help?__
 
 ```{r, eval=FALSE}
-toothData <- read_csv("data/toothData.csv", skip = 3)
+read_csv("path/to/file.csv", skip = 3)
 ```
 
-__What if the first three lines were comments starting with `#`?__
-
-## Reading Help Pages
-
-__If we had a file with 3 blank lines to start, what would our code look like?__
-
-```{r, eval=FALSE}
-toothData <- read_csv("data/toothData.csv", skip = 3)
-```
-
-__What if the first three lines were comments starting with `#`?__
-
-- It could be the same. 
-- `R` uses the first row to determine the number of columns
-
-```{r, eval=FALSE}
-toothData <- read_csv("data/toothData.csv", comment = "#")
-```
 
 ## Reading Help Pages | Bonus Slide
 
@@ -284,15 +264,156 @@ The main function is `read_excel()`
 ?read_excel
 ```
 
-## Loading Excel Files
+# Dealing With Difficult Data
 
-__Try loading each of the sheets from `RealTimeData.xslx`__
+## Data Cleaning | What if the data we have isn't nice?
 
-(Remember to call the `R` objects something)
+- Missing values might be given a value (e.g. 9999, "NA")
+- Column names might be missing
+- File may have comments
+- May be structural errors in the file
+- White-space in cells
+- Merged Cells (these are difficult...)
 
-__Do you get any error messages for sheet 3?__
+## Dealing With Column Names
 
-__How could we load these two separate tables?__
+- `read_csv()` has an argument called `col_names`
+- NB:`read.csv()` refers to column names as a `header`
+- By default, the first row is assumed to contain the names of the variables/columns, i.e. `col_names = TRUE`
+- This tells `R` how many columns you have
+
+__What happens if we get this wrong?__
+
+```{r}
+no_header <- read_csv("data/no_header.csv")
+```
+
+## Dealing With Column Names
+
+We can easily fix this
+
+```{r}
+no_header <- read_csv("data/no_header.csv", col_names = FALSE)
+```
+
+__What about that first column?__
+
+## Dealing With Column Names
+
+We can specify what is loaded or skipped using `col_types`
+
+```{r, eval=FALSE}
+?read_csv
+```
+
+- We can skip columns using the `-` symbol
+- `character` and `numbers` use `c` and `n` respectively
+
+```{r}
+no_header <- read_csv("data/no_header.csv", col_names = FALSE,
+                      col_types = "-ccnnc")
+```
+
+__What if we get that wrong?__
+
+## Dealing With Column Names | Getting it wrong
+
+Let's mis-specify the third column as a number
+
+```{r}
+no_header <- read_csv("data/no_header.csv", col_names = FALSE,
+                      col_types = "-cnnnc")
+```
+
+- Did the error message make any sense?
+- Did the file load?
+- What happened to the third column?
+
+## Dealing With Comments
+
+Let's get it wrong first
+
+```{r}
+comments <- read_csv("data/comments.csv")
+```
+
+Now we can get it right
+
+```{r}
+comments <- read_csv("data/comments.csv", comment = "#")
+```
+
+This will work if there are comments in __any__ rows
+
+## Structural Problems
+
+**What happens when you try to load the file `bad_colnames_.csv`**
+
+```{r}
+bad_colnames <- read_csv("data/bad_colnames.csv")
+```
+
+__How could we fix this?__
+
+a. By editing the file, and 
+b. Without editing the file
+
+## Structural Problems
+
+__Here's my fix__
+
+```{r}
+bad_colnames <- read_csv("data/bad_colnames.csv", 
+                             skip =  1, col_names = FALSE)
+colnames(bad_colnames) <- c("rowname", "gender", "name",
+                                "weight", "height", "transport")
+```
+
+Here we have set the column names manually...
+
+## The `c()` function
+
+The most common function in `R` is `c()`
+
+- This stands for `combine`
+- Combines all values into a single `R` object, or `vector`
+- If left empty, it is equivalent to `NULL`
+
+```{r, results='markup'}
+c()
+colnames(bad_colnames) <- c()
+```
+
+## Encoded Missing Values
+
+__What if missing values have been set to "-"?__
+
+Let's get it wrong first
+
+```{r}
+missing_data <- read_csv("data/missing_data.csv")
+```
+
+__Where have the errors appeared?__
+
+Now we can get it right
+
+```{r}
+missing_data <- read_csv("data/missing_data.csv", na = "-")
+```
+
+## Exporting Data
+
+After we've edited a file, we might wish to export it
+
+```{r}
+?write_csv
+```
+
+- This is a wrapper for `write_delim()`
+- Can export `.csv`, `.txt`, `.tsv` etc
+- Individual `R` objects can be exported using `write_rds()`
+
 
 <div class="footer" style="text-align:center;width:25%">
 [Home](https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/)

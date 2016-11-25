@@ -27,7 +27,8 @@
       // Slide settings
       settings: {
                 title: '2 - Loading Data Into R',
-                        useBuilds: true,
+                        subtitle: 'BioinfoSummer Satellite R Workshop',
+                useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
         enableTouch: true,
@@ -339,32 +340,13 @@ library(readr)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Reading Help Pages</h2></hgroup><article  id="reading-help-pages-2">
 
-<p><strong>If we had a file with 3 blank lines to start, what would our code look like?</strong></p>
-
-<pre class = 'prettyprint lang-r'>toothData &lt;- read_csv(&quot;data/toothData.csv&quot;, ???)</pre>
+<p><strong>If we had a file with 3 blank lines to start, is there an argument that can help?</strong></p>
 
 </article></slide><slide class=''><hgroup><h2>Reading Help Pages</h2></hgroup><article  id="reading-help-pages-3">
 
-<p><strong>If we had a file with 3 blank lines to start, what would our code look like?</strong></p>
+<p><strong>If we had a file with 3 blank lines to start, is there an argument that can help?</strong></p>
 
-<pre class = 'prettyprint lang-r'>toothData &lt;- read_csv(&quot;data/toothData.csv&quot;, skip = 3)</pre>
-
-<p><strong>What if the first three lines were comments starting with <code>#</code>?</strong></p>
-
-</article></slide><slide class=''><hgroup><h2>Reading Help Pages</h2></hgroup><article  id="reading-help-pages-4">
-
-<p><strong>If we had a file with 3 blank lines to start, what would our code look like?</strong></p>
-
-<pre class = 'prettyprint lang-r'>toothData &lt;- read_csv(&quot;data/toothData.csv&quot;, skip = 3)</pre>
-
-<p><strong>What if the first three lines were comments starting with <code>#</code>?</strong></p>
-
-<ul>
-<li>It could be the same.</li>
-<li><code>R</code> uses the first row to determine the number of columns</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>toothData &lt;- read_csv(&quot;data/toothData.csv&quot;, comment = &quot;#&quot;)</pre>
+<pre class = 'prettyprint lang-r'>read_csv(&quot;path/to/file.csv&quot;, skip = 3)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Reading Help Pages </h2><h3> Bonus Slide</h3></hgroup><article  id="reading-help-pages-bonus-slide">
 
@@ -387,15 +369,146 @@ library(readr)</pre>
 
 <pre class = 'prettyprint lang-r'>?read_excel</pre>
 
-</article></slide><slide class=''><hgroup><h2>Loading Excel Files</h2></hgroup><article  id="loading-excel-files-1">
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Dealing With Difficult Data</h2></hgroup><article  id="dealing-with-difficult-data">
 
-<p><strong>Try loading each of the sheets from <code>RealTimeData.xslx</code></strong></p>
+</article></slide><slide class=''><hgroup><h2>Data Cleaning </h2><h3> What if the data we have isn&#39;t nice?</h3></hgroup><article  id="data-cleaning-what-if-the-data-we-have-isnt-nice">
 
-<p>(Remember to call the <code>R</code> objects something)</p>
+<ul>
+<li>Missing values might be given a value (e.g. 9999, &quot;NA&quot;)</li>
+<li>Column names might be missing</li>
+<li>File may have comments</li>
+<li>May be structural errors in the file</li>
+<li>White-space in cells</li>
+<li>Merged Cells (these are difficult&#8230;)</li>
+</ul>
 
-<p><strong>Do you get any error messages for sheet 3?</strong></p>
+</article></slide><slide class=''><hgroup><h2>Dealing With Column Names</h2></hgroup><article  id="dealing-with-column-names">
 
-<p><strong>How could we load these two separate tables?</strong></p>
+<ul>
+<li><code>read_csv()</code> has an argument called <code>col_names</code></li>
+<li>NB:<code>read.csv()</code> refers to column names as a <code>header</code></li>
+<li>By default, the first row is assumed to contain the names of the variables/columns, i.e. <code>col_names = TRUE</code></li>
+<li>This tells <code>R</code> how many columns you have</li>
+</ul>
+
+<p><strong>What happens if we get this wrong?</strong></p>
+
+<pre class = 'prettyprint lang-r'>no_header &lt;- read_csv(&quot;data/no_header.csv&quot;)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Dealing With Column Names</h2></hgroup><article  id="dealing-with-column-names-1">
+
+<p>We can easily fix this</p>
+
+<pre class = 'prettyprint lang-r'>no_header &lt;- read_csv(&quot;data/no_header.csv&quot;, col_names = FALSE)</pre>
+
+<p><strong>What about that first column?</strong></p>
+
+</article></slide><slide class=''><hgroup><h2>Dealing With Column Names</h2></hgroup><article  id="dealing-with-column-names-2">
+
+<p>We can specify what is loaded or skipped using <code>col_types</code></p>
+
+<pre class = 'prettyprint lang-r'>?read_csv</pre>
+
+<ul>
+<li>We can skip columns using the <code>-</code> symbol</li>
+<li><code>character</code> and <code>numbers</code> use <code>c</code> and <code>n</code> respectively</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>no_header &lt;- read_csv(&quot;data/no_header.csv&quot;, col_names = FALSE,
+                      col_types = &quot;-ccnnc&quot;)</pre>
+
+<p><strong>What if we get that wrong?</strong></p>
+
+</article></slide><slide class=''><hgroup><h2>Dealing With Column Names </h2><h3> Getting it wrong</h3></hgroup><article  id="dealing-with-column-names-getting-it-wrong">
+
+<p>Let&#39;s mis-specify the third column as a number</p>
+
+<pre class = 'prettyprint lang-r'>no_header &lt;- read_csv(&quot;data/no_header.csv&quot;, col_names = FALSE,
+                      col_types = &quot;-cnnnc&quot;)</pre>
+
+<ul>
+<li>Did the error message make any sense?</li>
+<li>Did the file load?</li>
+<li>What happened to the third column?</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Dealing With Comments</h2></hgroup><article  id="dealing-with-comments">
+
+<p>Let&#39;s get it wrong first</p>
+
+<pre class = 'prettyprint lang-r'>comments &lt;- read_csv(&quot;data/comments.csv&quot;)</pre>
+
+<p>Now we can get it right</p>
+
+<pre class = 'prettyprint lang-r'>comments &lt;- read_csv(&quot;data/comments.csv&quot;, comment = &quot;#&quot;)</pre>
+
+<p>This will work if there are comments in <strong>any</strong> rows</p>
+
+</article></slide><slide class=''><hgroup><h2>Structural Problems</h2></hgroup><article  id="structural-problems">
+
+<p><strong>What happens when you try to load the file <code>bad_colnames_.csv</code></strong></p>
+
+<pre class = 'prettyprint lang-r'>bad_colnames &lt;- read_csv(&quot;data/bad_colnames.csv&quot;)</pre>
+
+<p><strong>How could we fix this?</strong></p>
+
+<ol>
+<li>By editing the file, and</li>
+<li>Without editing the file</li>
+</ol>
+
+</article></slide><slide class=''><hgroup><h2>Structural Problems</h2></hgroup><article  id="structural-problems-1">
+
+<p><strong>Here&#39;s my fix</strong></p>
+
+<pre class = 'prettyprint lang-r'>bad_colnames &lt;- read_csv(&quot;data/bad_colnames.csv&quot;, 
+                             skip =  1, col_names = FALSE)
+colnames(bad_colnames) &lt;- c(&quot;rowname&quot;, &quot;gender&quot;, &quot;name&quot;,
+                                &quot;weight&quot;, &quot;height&quot;, &quot;transport&quot;)</pre>
+
+<p>Here we have set the column names manually&#8230;</p>
+
+</article></slide><slide class=''><hgroup><h2>The <code>c()</code> function</h2></hgroup><article  id="the-c-function">
+
+<p>The most common function in <code>R</code> is <code>c()</code></p>
+
+<ul>
+<li>This stands for <code>combine</code></li>
+<li>Combines all values into a single <code>R</code> object, or <code>vector</code></li>
+<li>If left empty, it is equivalent to <code>NULL</code></li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>c()</pre>
+
+<pre >## NULL</pre>
+
+<pre class = 'prettyprint lang-r'>colnames(bad_colnames) &lt;- c()</pre>
+
+</article></slide><slide class=''><hgroup><h2>Encoded Missing Values</h2></hgroup><article  id="encoded-missing-values">
+
+<p><strong>What if missing values have been set to &quot;-&quot;?</strong></p>
+
+<p>Let&#39;s get it wrong first</p>
+
+<pre class = 'prettyprint lang-r'>missing_data &lt;- read_csv(&quot;data/missing_data.csv&quot;)</pre>
+
+<p><strong>Where have the errors appeared?</strong></p>
+
+<p>Now we can get it right</p>
+
+<pre class = 'prettyprint lang-r'>missing_data &lt;- read_csv(&quot;data/missing_data.csv&quot;, na = &quot;-&quot;)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Exporting Data</h2></hgroup><article  id="exporting-data">
+
+<p>After we&#39;ve edited a file, we might wish to export it</p>
+
+<pre class = 'prettyprint lang-r'>?write_csv</pre>
+
+<ul>
+<li>This is a wrapper for <code>write_delim()</code></li>
+<li>Can export <code>.csv</code>, <code>.txt</code>, <code>.tsv</code> etc</li>
+<li>Individual <code>R</code> objects can be exported using <code>write_rds()</code></li>
+</ul>
 
 <div class="footer" style="text-align:center;width:25%">
 <p><a href='https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/' title=''>Home</a></p></div></article></slide>
