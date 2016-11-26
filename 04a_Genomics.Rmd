@@ -1,0 +1,429 @@
+---
+title: "Genomics With R"
+subtitle: "BioinfoSummer Satellite R Workshop"
+author: "Steve Pederson"
+date: "27 November 2016"
+output: 
+  ioslides_presentation:
+    css: custom.css
+    fig_caption: yes
+    keep_md: yes
+    logo: images/UoA_logo_col_vert.png
+    widescreen: yes
+---
+
+```{r, loadPackages, echo = FALSE, include = FALSE}
+library(knitr)
+opts_chunk$set(echo = TRUE, include = TRUE, 
+               warning = FALSE, message = FALSE, 
+               out.width = 800, fig.align = "center",
+               results = 'hide')
+```
+
+# The Bioconductor Project
+
+## R Packages
+
+- A Package is a collection of functions
+- Associated with a given task/analysis/data-type
+- The main repository is "__The Comprehensive R Archive Network__" (https://cran.r-project.org/)
+
+`Tools > Install Packages...`
+
+## The Bioconductor Project | http://www.bioconductor.org
+
+- All packages (~1200) are for Bioinformatics
+    + Statistical Analysis; Databases & Data Handling; Visualisation
+    + NGS data, microarrays, flow cytometry, proteomics...
+- New releases every ~6 months
+- All packages come with a descriptive vignette
+
+## The Bioconductor Project
+
+```{r, echo=FALSE, results='asis', out.width=750}
+include_graphics("images/bioC.png")
+```
+
+
+## The Bioconductor Project
+
+```{r, eval=FALSE}
+browseVignettes()
+```
+
+Also has an active support community:
+
+- https://support.bioconductor.org/
+- Large suite of tutorials & workflows
+
+A recent training course: http://www.bioconductor.org/help/course-materials/2016/BioC2016/
+
+
+## The Bioconductor Project
+
+3 Broad Headings based on package tags, or `biocViews`
+
+1. Software
+2. AnnotationData
+3. ExperimentData
+
+
+## The Bioconductor Project
+
+### 1. Software
+
+- Currently >1000 packages, primarily for analysis
+- Heavily used array packages: `affy`, `gcrma`, `limma`
+- Access to external databases: `biomaRt`, `topGO`
+- Rich in Seq analysis packages: `edgeR`, `DESeq`, `RSamtools`
+- Wrappers for external Seq tools: `muscle`, `RBowtie`
+- Lots of new object classes defined
+
+## The Bioconductor Project
+
+### 2. Annotation
+- Currently >900 packages
+- Set database classes (`OrgDb`, `TxDb`, `OrganismDb`, `BSgenome`)
+- Annotations for common microarrays (e.g. Affy & Illumina)
+
+
+## The Bioconductor Project
+
+### 3. Experiment Data
+- Currently ~300 packages
+- Includes standard datasets for algorithm testing
+- Also those included in many training courses
+
+
+## Installing Bioconductor
+
+- Packages don't appear in the drop-down menu for *RStudio*
+    + Tools > Install Packages > ???
+- Can be added to your default repositories, but there is a preferred installation procedure
+
+## Installing Bioconductor
+
+```{r, eval=FALSE}
+source("http://bioconductor.org/biocLite.R")
+```
+
+- This installs the package `BiocInstaller`
+- Manages the synchronisation of *R* releases and Bioconductor updates
+- The main installation function is `biocLite()`
+- Installs from __both__ CRAN & Bioconductor
+
+## Installing Bioconductor
+
+*R* dependencies can be challenging!
+
+To check that you have the tested package versions and fix them
+
+```{r, eval=FALSE}
+library(BiocInstaller)
+biocValid(fix = TRUE)
+```
+
+## Installing Bioconductor Packages
+
+Let's install some key packages for today
+
+```{r, eval=FALSE}
+biocLite(c("biomaRt", "AnnotationHub", "GenomicRanges", "rtracklayer"))
+```
+
+
+# Getting Annotation Information
+
+## Annotation
+
+- Make up a significant proportion of Bioconductor Packages
+- Often seen as the end point of analysis
+- For networks/pathways it's the starting point
+
+## `biomaRt`
+
+The package `biomaRt` is based on the web interface at http://www.ensembl.org/biomart/martview
+
+
+```{r, message=FALSE}
+library(biomaRt)
+allMarts <- listMarts()
+```
+
+These are the possible data sources (i.e. marts) we can access
+
+## `biomaRt`
+
+Each `mart` has multiple `datasets`
+
+```{r}
+mart <- useMart("ENSEMBL_MART_ENSEMBL")
+ensDatasets <- listDatasets(mart)
+library(dplyr)
+filter(ensDatasets, grepl("sapiens", dataset))
+```
+
+## `biomaRt`
+
+We can just go straight there by selecting the `dataset` within `useMart()`
+
+```{r}
+mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", 
+                dataset = "hsapiens_gene_ensembl")
+```
+
+NB: This is exactly the same procedure as the windows on the web GUI
+
+## `biomaRt`
+
+Now the `mart` & `dataset` have been selected
+
+- The main query function is `getBM()`
+
+```{r}
+?getBM
+```
+
+This will give the requested data directly into a `data.frame`
+
+## `biomaRt` | Attributes and Filters
+
+The two main pieces of data
+
+- `attributes` are the values we are looking for
+- `filter` along with `values` are our search queries
+
+To find what attributes can be downloaded from our `mart`
+
+```{r}
+martAttributes <- listAttributes(mart)
+head(martAttributes, 10)
+```
+
+These are possible pieces of information we can return (`dim(martAttributes)`)
+
+## `biomaRt`
+
+- Some attributes may contain large amounts of data
+- We can use filters to restrict our search
+- e.g. we may have only a few genes of interest
+
+```{r}
+martFilters <- listFilters(mart)
+head(martFilters, 10)
+```
+
+
+## `biomaRt` | Example 1
+
+- Let's get all the gene names on Chromosome 1
+- NB: We need to specify the filter, and give the filter values separately
+- We need to specify the mart argument every time
+- Our query field will not be included in the results
+
+
+```{r}
+genes <- getBM(attributes=c("hgnc_symbol", "entrezgene"), 
+               filters = "chromosome_name", 
+               values = "1", mart = mart)
+head(genes)
+```
+
+## `biomaRt` | Example 2
+
+```{r}
+ids <- c("ENSG00000134460", "ENSG00000163599")
+attr <-  c("ensembl_gene_id", "ensembl_transcript_id")
+test <- getBM(attributes = attr,
+              filters = "ensembl_gene_id",
+              values = ids,
+              mart = mart)
+```
+
+Repeat the above **without asking for the gene_id back**
+
+## `biomaRt` | Getting Our Own Data
+
+### How could we also get the `chromosome`, `strand`, `start` & `end` positions in the above query
+
+## `biomaRt` | Getting Our Own Data
+
+```{r}
+attr <-  c("ensembl_gene_id", "ensembl_transcript_id", 
+           "chromosome_name", "strand", 
+           "transcript_start", "transcript_end")
+test <- getBM(attributes = attr,
+              filters = "ensembl_gene_id",
+              values = ids,
+              mart = mart)
+```
+
+
+## `biomaRt` and `dplyr`
+
+Here's a problem
+
+```{r}
+?select
+```
+
+We now have more than one function called `select`
+
+__How will `R` know which one to use"__
+
+## `biomaRt` and `dplyr`
+
+This is a well known problem
+
+The specific version of a function can be called by using the package name
+
+- Known as the `namespace`
+- `dplyr::select()` or `biomaRt::select()`
+
+# Annotation Hub
+
+## AnnotationData
+
+This session relies heavily on material from
+
+**Annotation Resources**
+
+Authors: Marc RJ Carlson, Herve Pages, Sonali Arora, Valerie Obenchain, and Martin Morgan
+
+Presented at BioC2015 July 20-22, Seattle, WA
+
+https://github.com/mrjc42/BiocAnnotRes2015
+
+## AnnotationData
+
+Four common classes of annotation
+
+Object type |contents
+-------------|---------------------------
+OrgDb | gene based information
+BSgenome | genome sequence
+TxDb  | transcriptome ranges
+OrganismDb | composite information
+
+## AnnotationHub
+
+```{r, message=FALSE}
+library(AnnotationHub)
+ah <- AnnotationHub()
+```
+
+- This is a relatively new & sensibly named package
+- We can access & find numerous annotation types
+- Uses `SQL`-type methods
+- Creating this object will create a cache with the latest metadata from each data source
+
+## Annotation Hub
+
+Get a summary:
+
+```{r, eval=FALSE}
+ah
+```
+
+This is another `S4` object
+
+- 3 important components: `$dataprovider`, `$species` & `$rdataclass`
+- additional components listed under `additional mcols()` can also be accessed with the `$`
+
+## Annotation Hub
+
+We can find the data providers
+
+```{r, results='hide'}
+unique(ah$dataprovider) 
+```
+
+Or the different data classes in the hub
+
+```{r, results='hide'}
+unique(ah$rdataclass) 
+```
+
+## Annotation Hub
+
+We can find the species with annotations
+
+```{r}
+sp <- unique(ah$species)
+head(sp)
+length(sp)
+```
+
+## Annotation Hub
+
+We can `query` for matches to any term, e.g. to look for rabbit (*Oryctolagus cuniculus*) annotation sources
+
+```{r, results='hide', eval=FALSE}
+query(ah, "Oryctolagus")
+```
+
+We can create smaller `AnnotationHub` objects, which we could then search again
+
+## Annotation Hub
+
+We can subset easily
+
+```{r, results='hide', eval=FALSE}
+subset(ah, rdataclass=="GRanges")
+```
+
+Or if we know we want the `GRanges` annotations for the rabbit
+
+```{r, results='hide', eval=FALSE}
+subset(query(ah, "Oryctolagus"), rdataclass=="GRanges")
+```
+
+## Annotation Hub
+
+Or we can combine multiple search queries
+
+Fetch the rabbit annotations, which are `GRanges` objects derived from `Ensembl`
+
+```{r, results='hide', eval=FALSE}
+query(ah, 
+      pattern=c("Oryctolagus", "GRanges", "Ensembl"))
+```
+
+## Annotation Hub
+
+We can find the metadata for the whole object, or any subset we've created
+
+```{r, results='hide', eval=FALSE}
+meta <- mcols(ah)
+meta
+```
+
+## Annotation Hub
+
+There's even a GUI
+
+```{r, eval=FALSE}
+display(ah)
+```
+
+- You may need to resize the **Viewer** window
+- Return an `AnnotationHub()` to R by selecting a row & clicking the button
+
+## Annotation Hub
+
+Once we have the specific annotation we're interested in:
+- subset using the name & the double bracket method
+- this loads the `AnnotationData` object into your workspace
+
+```{r}
+gr <- ah[["AH51056"]]
+gr
+```
+
+- We'll see more `GRanges` objects during the week
+
+---
+
+<div class="footer" style="text-align:center;width:25%">
+[Home](https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/)
+</div>

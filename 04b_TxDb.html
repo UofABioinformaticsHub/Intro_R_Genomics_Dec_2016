@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Introduction to R</title>
+  <title>TxDb Objects</title>
 
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -21,7 +21,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Introduction to R',
+                title: 'TxDb Objects',
                         subtitle: 'BioinfoSummer Satellite R Workshop',
                 useBuilds: true,
         usePrettify: true,
@@ -117,493 +117,262 @@
           </hgroup>
   </slide>
 
-<slide class=''><hgroup><h2>Who Am I? </h2><h3> Steve Pederson</h3></hgroup><article  id="who-am-i-steve-pederson">
+<slide class=''><hgroup><h2>AnnotationData</h2></hgroup><article  id="annotationdata">
+
+<p>Four common classes of annotation</p>
+
+<table class = 'rmdtable'>
+<tr class="header">
+<th align="left">Object type</th>
+<th align="left">contents</th>
+</tr>
+<tr class="odd">
+<td align="left">OrgDb</td>
+<td align="left">gene based information</td>
+</tr>
+<tr class="even">
+<td align="left">BSgenome</td>
+<td align="left">genome sequence</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>TxDb</strong></td>
+<td align="left"><strong>transcriptome ranges</strong></td>
+</tr>
+<tr class="even">
+<td align="left">OrganismDb</td>
+<td align="left">composite information</td>
+</tr>
+</table>
+
+</article></slide><slide class=''><hgroup><h2><code>TxDb</code> Objects</h2></hgroup><article  id="txdb-objects">
+
+<p>These are the objects with the transcriptome information</p>
 
 <ul>
-<li>R User for &gt;10 years</li>
-<li>Co-ordinator, Bioinformatics Hub
-
-<ul>
-<li>Level 4, Santos Petroleum Engineering Building</li>
-</ul></li>
+<li>Saved using <code>GRanges</code> classes</li>
+<li>Derived heavily from the <code>GenomicRanges</code> &amp; <code>IRanges</code> packages</li>
+<li>The key idea is to refer the the genome using ranges to define locations</li>
 </ul>
 
-<p>Also helping today:</p>
+</article></slide><slide class=''><hgroup><h2>Workspace Setup</h2></hgroup><article  id="workspace-setup">
+
+<pre class = 'prettyprint lang-r'>library(BiocInstaller)
+biocLite(&quot;TxDb.Hsapiens.UCSC.hg19.knownGene&quot;)</pre>
+
+<pre class = 'prettyprint lang-r'>library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb &lt;- TxDb.Hsapiens.UCSC.hg19.knownGene   </pre>
+
+<pre class = 'prettyprint lang-r'>txdb</pre>
+
+<p>This will load all the package dependencies as well</p>
+
+</article></slide><slide class=''><hgroup><h2><code>GRanges</code> objects</h2></hgroup><article  id="granges-objects">
+
+<p>Let&#39;s look at a <code>GRanges</code> object</p>
+
+<p>Note that our <code>txdb</code> object used EntrezGene Ids</p>
+
+<pre class = 'prettyprint lang-r'>ids &lt;- c(BRCA1=&quot;672&quot;, PTEN=&quot;5728&quot;)
+genes(txdb, filter=list(gene_id=ids)) </pre>
+
+</article></slide><slide class=''><hgroup><h2><code>Rle</code> vectors</h2></hgroup><article  id="rle-vectors">
+
+<p>Run Length Encoding format vectors</p>
 
 <ul>
-<li>Alastair Ludington</li>
-<li>Jimmy Breen (morning) &amp; Hien To (afternoon)</li>
+<li>More memory efficient way to store positional information</li>
+<li>highly efficient for long regions of &quot;no information&quot;, or</li>
+<li>also efficient for data with long stretches of repeats</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Today&#39;s Outline </h2><h3> Four 90 minute Sessions</h3></hgroup><article  id="todays-outline-four-90-minute-sessions">
+</article></slide><slide class=''><hgroup><h2><code>Rle</code> vectors</h2></hgroup><article  id="rle-vectors-1">
+
+<p><code>rle</code> : Part of the <code>base</code> <em>R</em> package</p>
+
+<p><code>Rle</code> : <code>S4Vectors</code> version</p>
+
+<p><code>Rle</code> is used extensively in <code>GenomicRanges</code></p>
+
+<pre class = 'prettyprint lang-r'>x &lt;- c(1, 0, 0, 0, 1, 1, 2, 0, 0)
+Rle(x)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Creating a <code>GRanges</code> object</h2></hgroup><article  id="creating-a-granges-object">
+
+<pre class = 'prettyprint lang-r'>gr &lt;- GRanges(seqnames=Rle(c(&quot;chr1&quot;, &quot;chrMT&quot;), c(2, 4)),
+              ranges=IRanges(15:20, 20),
+              strand=rep(c(&quot;+&quot;, &quot;-&quot;, &quot;*&quot;), 2))</pre>
+
+<p>Print the object by typing <code>gr</code></p>
+
+<p>The essential components are:</p>
+
+<ul>
+<li><code>seqnames</code> &amp; <code>ranges</code></li>
+<li>If <code>strand</code> is omitted, the value <code>*</code> is added</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Working with a <code>GRanges</code> object</h2></hgroup><article  id="working-with-a-granges-object">
+
+<h3>Try these commands:</h3>
+
+<pre class = 'prettyprint lang-r'>seqnames(gr)
+strand(gr)
+ranges(gr)
+seqinfo(gr)
+length(gr)
+gr[1]
+width(gr)
+start(gr)</pre>
+
+<ul>
+<li><code>seqinfo()</code> returns an object with a formal class</li>
+<li><code>Seqinfo</code> objects contain metadata about each sequence</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Adding more information</h2></hgroup><article  id="adding-more-information">
+
+<pre class = 'prettyprint lang-r'>names(gr) &lt;- paste0(&quot;Rng&quot;, LETTERS[1:length(gr)])</pre>
+
+<p>We can assign <code>names</code> to the ranges:</p>
+
+<ul>
+<li>Could be exons, genes, SNPs, CDS or any other feature</li>
+</ul>
+
+<p>Now look at the object again</p>
+
+</article></slide><slide class=''><hgroup><h2>Adding more information</h2></hgroup><article  id="adding-more-information-1">
+
+<p>We can also add some key information about the sequences</p>
+
+<pre class = 'prettyprint lang-r'>seqlengths(gr) &lt;- c(5e6, 1.5e5)
+isCircular(gr) &lt;- c(FALSE, TRUE)
+genome(gr) &lt;- c(&quot;madeUp.v1&quot;)
+seqinfo(gr)</pre>
+
+</article></slide><slide class=''><hgroup><h2>Adding more information</h2></hgroup><article  id="adding-more-information-2">
+
+<p><code>GRanges</code> objects also have columns for metadata</p>
+
+<p>Let&#39;s add:</p>
 
 <ol>
-<li><p>Introduction to R and RStudio</p></li>
-<li><p>Loading Data Into R</p></li>
-<li><p>What have we really done?</p></li>
-<li><p>The Genomics Era</p></li>
+<li>Some \(p\)-values from a hypothesis test</li>
+<li>Alternative names for the Chromosomes</li>
 </ol>
 
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Introduction</h2></hgroup><article  id="introduction">
+<pre class = 'prettyprint lang-r'>mcols(gr) &lt;- data.frame(score = 10^(-rexp(6)),
+                        altChr = rep(c(&quot;G001&quot;, &quot;G002&quot;), 
+                                     times=c(2, 4)))</pre>
 
-</article></slide><slide class=''><hgroup><h2>Why use R?</h2></hgroup><article  id="why-use-r">
+</article></slide><slide class=''><hgroup><h2>Subsetting <code>GRanges</code> objects</h2></hgroup><article  id="subsetting-granges-objects">
 
-<ul>
-<li>Began as a statistical tool in the 1990s (Ross Ihaka &amp; Robert Gentleman)</li>
-<li>Evolved far beyond it&#39;s original design</li>
-<li>Current estimates are ~2 million users</li>
-</ul>
+<h3>Try these commands:</h3>
 
-</article></slide><slide class=''><hgroup><h2>Why use R?</h2></hgroup><article  id="why-use-r-1">
+<pre class = 'prettyprint lang-r'>gr[1:3]
+gr[1:2, 1]
+subset(gr, score &lt; 0.05)
+subset(gr, width==1)
+subset(gr, start &gt; 18)
+subset(gr, start &gt; 18 | width ==5)
+table(gr$altChr)
+summary(mcols(gr)[,&quot;score&quot;])</pre>
 
-<ul>
-<li>The main software/language used for analysis and visualisation of biological data (along with Python)</li>
-<li>Can handle extremely large datasets<br/></li>
-<li>We can easily perform complex analytic procedures</li>
-<li>Many processes come as inbuilt functions<br/></li>
-<li>Huge user base of biological researchers</li>
-</ul>
+</article></slide><slide class=''><hgroup><h2><code>GRangesList</code></h2></hgroup><article  id="grangeslist">
 
-</article></slide><slide class=''><hgroup><h2>Why use R? </h2><h3> Other Key Reasons</h3></hgroup><article  id="why-use-r-other-key-reasons">
+<p><code>GRanges</code> objects can also be extended to <code>GRangesList</code> objects</p>
 
-<ul>
-<li>Avoids common Excel pitfalls</li>
-<li>Reproducible Research</li>
-</ul>
+<pre class = 'prettyprint lang-r'>exByGn &lt;- exonsBy(txdb, &quot;gene&quot;)
+length(exByGn)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Automatic Conversion </h2><h3> A common Excel problem</h3></hgroup><article  id="automatic-conversion-a-common-excel-problem">
+<pre class = 'prettyprint lang-r'>exByGn</pre>
 
-<p><strong>Excel is notorious for converting values from one thing to another inappropriately.</strong></p>
+</article></slide><slide class=''><hgroup><h2><code>GRangesList</code></h2></hgroup><article  id="grangeslist-1">
 
-<ul>
-<li><p>Gene names are often converted to dates (e.g. <em>SEPT9</em>)</p></li>
-<li><p>Genotypes can be converted into numeric values (e.g. the homozygote &quot;1/1&quot;)</p></li>
-<li><p>In <code>R</code> we generally work with plain text files.</p></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Reproducible Research</h2></hgroup><article  id="reproducible-research">
+<p>As well as the <code>exonsBy()</code> methods, other methods include</p>
 
 <ul>
-<li>Research is littered with mistakes from Excel</li>
-<li>Studies have made Phase III trials</li>
-<li><em>We have code to record and exactly repeat our analysis</em></li>
-<li>We can find and correct errors more easily than if they are copy/paste errors</li>
+<li><code>transcriptsBy()</code>, <code>cdsBy()</code>, <code>threeUTRsByTranscript()</code> + more</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Using R</h2></hgroup><article  id="using-r">
+<p>In the current example exons are listed by gene, but can also be listed by <code>exon</code>, <code>cds</code> or <code>tx</code></p>
 
-<blockquote>
-<p><strong>With power comes great responsibility - Uncle Ben</strong></p>
-</blockquote>
+</article></slide><slide class=''><hgroup><h2><code>GRangesList</code></h2></hgroup><article  id="grangeslist-2">
 
-<p>With the extra capability R offers, we need to understand a little about:</p>
+<p>These behave like normal <code>list</code> objects in <em>R</em></p>
 
-<ol>
-<li>Data Types<br/></li>
-<li>Data Structures</li>
-</ol>
+<h3>Try these commands</h3>
 
-<p>We&#39;ll get to that later&#8230;</p>
+<pre class = 'prettyprint lang-r'>exByGn[[1]]
+exByGn$`1`
+exByGn[1:2]
+sapply(exByGn[1:10], 
+       function(x){length(subset(x, width&lt;100))}) 
+unlist(exByGn[1:5])</pre>
 
-<p><em>First, we&#39;ll just explore the <code>R</code> Console</em></p>
+<p><em>Ask if you&#39;re unsure about what any of the above commands do</em></p>
 
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r">
+</article></slide><slide class=''><hgroup><h2><code>GenomicFeatures</code></h2></hgroup><article  id="genomicfeatures">
+
+<p>Also contains other useful methods</p>
+
+<pre class = 'prettyprint lang-r'>promoters(txdb, upstream=100, downstream=50,
+          columns = c(&quot;tx_name&quot;, &quot;gene_id&quot;))</pre>
+
+<pre class = 'prettyprint lang-r'>library(mirbase.db)
+microRNAs(txdb)[1:3]</pre>
+
+</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Combining Data Sources</h2></hgroup><article  id="combining-data-sources">
+
+</article></slide><slide class=''><hgroup><h2>Converting From EntrezGene to Ensembl</h2></hgroup><article  id="converting-from-entrezgene-to-ensembl">
+
+<p>In our object <code>exByGn</code>, we have a list of genes and their ranges</p>
 
 <ul>
-<li>Can be treated as a simple calculator:</li>
+<li>Named using EntrezGene IDs</li>
+<li>Let&#39;s get <code>EnsemblIDs</code> and the <code>biotype</code></li>
+<li>Setup a <code>biomaRt</code> connection</li>
 </ul>
 
-<pre class = 'prettyprint lang-r'>1 + 2</pre>
+<pre class = 'prettyprint lang-r'>library(biomaRt)
+mart &lt;- useMart(biomart = &quot;ENSEMBL_MART_ENSEMBL&quot;, 
+                dataset = &quot;hsapiens_gene_ensembl&quot;)</pre>
 
-<pre >## [1] 3</pre>
+</article></slide><slide class=''><hgroup><h2>Converting From EntrezGene to Ensembl</h2></hgroup><article  id="converting-from-entrezgene-to-ensembl-1">
 
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r-1">
+<p>Now we collect the genes and define the attributes we want</p>
 
-<ul>
-<li>Contains all standard mathematical functions <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code></li>
-</ul>
+<pre class = 'prettyprint lang-r'>entrezIDs &lt;- names(exByGn)
+attr &lt;- c(&quot;entrezgene&quot;, &quot;ensembl_gene_id&quot;, &quot;external_gene_name&quot;, &quot;gene_biotype&quot;)
+results &lt;- getBM(attributes = attr,
+                 filters = &quot;entrezgene&quot;,
+                 values = entrezIDs,
+                 mart= mart)</pre>
 
-<pre class = 'prettyprint lang-r'>2^3</pre>
+</article></slide><slide class=''><hgroup><h2>Converting From EntrezGene to Ensembl</h2></hgroup><article  id="converting-from-entrezgene-to-ensembl-2">
 
-<pre >## [1] 8</pre>
+<p>How did we go?</p>
 
-<pre class = 'prettyprint lang-r'>1 + 2 - 3 * 4 / 5</pre>
+<pre class = 'prettyprint lang-r'>summary(entrezIDs %in% results$entrezgene)
+table(table(results$entrezgene))</pre>
 
-<pre >## [1] 0.6</pre>
+</article></slide><slide class=''><hgroup><h2>Converting From EntrezGene to Ensembl</h2></hgroup><article  id="converting-from-entrezgene-to-ensembl-3">
 
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r-2">
+<p>Let&#39;s just keep the first mapping</p>
 
-<ul>
-<li>Built-in functions for common transformations like <code>log</code> or \(\sqrt{~}\)</li>
-<li>Place the values inside the round braces after the function name</li>
-</ul>
+<pre class = 'prettyprint lang-r'>library(dplyr)
+results &lt;- results %&gt;%
+  distinct(entrezgene, .keep_all = TRUE) %&gt;%
+  mutate(entrezgene = as.character(entrezgene))</pre>
 
-<pre class = 'prettyprint lang-r'>sqrt(2)</pre>
+<p>We also might need to convert those IDs back to characters</p>
 
-<pre >## [1] 1.414214</pre>
+</article></slide><slide class=''><hgroup><h2>Converting From EntrezGene to Ensembl</h2></hgroup><article  id="converting-from-entrezgene-to-ensembl-4">
 
-<pre class = 'prettyprint lang-r'>log(10)</pre>
+<p>Now we can just use the function <code>left_join()</code> from <code>dplyr</code></p>
 
-<pre >## [1] 2.302585</pre>
-
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r-3">
-
-<ul>
-<li>Two common log transforms are also included</li>
-<li><code>log2(0.5)</code> \(\equiv\)<code>`log(0.5, base = 2)</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>log2(0.5)</pre>
-
-<pre >## [1] -1</pre>
-
-<pre class = 'prettyprint lang-r'>log10(0.001)</pre>
-
-<pre >## [1] -3</pre>
-
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r-4">
-
-<ul>
-<li>Trigonometric Functions <code>sin()</code>, <code>cos()</code>, <code>tan()</code></li>
-<li>Other common functions like <code>abs()</code> for the absolute value</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>abs(-1)</pre>
-
-<pre >## [1] 1</pre>
-
-</article></slide><slide class=''><hgroup><h2>What is R?</h2></hgroup><article  id="what-is-r-5">
-
-<ul>
-<li>There is no <code>inverse()</code> function.</li>
-</ul>
-
-<h3>How would we find the inverse of a number?</h3>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Creating Objects In R</h2></hgroup><article  id="creating-objects-in-r">
-
-</article></slide><slide class=''><hgroup><h2>Creating Objects in R</h2></hgroup><article  id="creating-objects-in-r-1">
-
-<ul>
-<li>In <code>R</code> we can save objects and give them a name</li>
-<li>We type the desired name, followed by <code>&lt;-</code>, then the value</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x &lt;- 5</pre>
-
-<h3>2 Key points!!!</h3>
-
-<ol>
-<li>The value was not &quot;<em>printed</em>&quot; to the screen</li>
-<li>The <em>assignment operator</em> (<code>&lt;-</code>) acts like an arrow <strong>placing the value</strong> in the object <code>x</code></li>
-</ol>
-
-</article></slide><slide class=''><hgroup><h2>Creating Objects in R</h2></hgroup><article  id="creating-objects-in-r-2">
-
-<p>Yes we could have written:</p>
-
-<pre class = 'prettyprint lang-r'>x = 5</pre>
-
-<ul>
-<li>The standard convention is to use <code>&lt;-</code></li>
-<li>This is specific to creation of a new <code>R</code> object.</li>
-<li>It makes it clear <strong>to all readers</strong> that you are placing a value into an object</li>
-</ul>
-
-<h3>What other use might the <code>=</code> sign have?</h3>
-
-</article></slide><slide class=''><hgroup><h2>Creating Objects in R</h2></hgroup><article  id="creating-objects-in-r-3">
-
-<p>We could also have written</p>
-
-<pre class = 'prettyprint lang-r'>5 -&gt; x</pre>
-
-<p>But no-one ever does&#8230;</p>
-
-</article></slide><slide class=''><hgroup><h2>Using R objects</h2></hgroup><article  id="using-r-objects">
-
-<ul>
-<li>To see the value(s) that <code>x</code> contains, we just type it&#39;s name:</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x</pre>
-
-<pre >## [1] 5</pre>
-
-<ul>
-<li>We occasionally like to be <em>very specific</em> and use the <code>print()</code> command</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>print(x)</pre>
-
-<pre >## [1] 5</pre>
-
-</article></slide><slide class=''><hgroup><h2>Using R objects</h2></hgroup><article  id="using-r-objects-1">
-
-<ul>
-<li>We can now pass this value to any function, or do mathematical operations on it</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>sqrt(x)
-x^2
-x + 1</pre>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Vectors</h2></hgroup><article  id="vectors">
-
-</article></slide><slide class=''><hgroup><h2>A Brief Introduction To Vectors</h2></hgroup><article  id="a-brief-introduction-to-vectors">
-
-<ul>
-<li>In <code>R</code> we can combine many numbers together into a <code>vector</code></li>
-<li>Use the function <code>c()</code> (for <em>combine</em>)</li>
-<li>One of the most common functions in <code>R</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x &lt;- c(1, 2, 4)
-x</pre>
-
-<pre >## [1] 1 2 4</pre>
-
-</article></slide><slide class=''><hgroup><h2>A Brief Introduction To Vectors</h2></hgroup><article  id="a-brief-introduction-to-vectors-1">
-
-<ul>
-<li>We can now apply lots of functions to this vector</li>
-<li>Similar to working with a column in Excel</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>min(x)
-mean(x)
-sd(x)
-range(x)</pre>
-
-</article></slide><slide class=''><hgroup><h2>A Brief Introduction To Vectors</h2></hgroup><article  id="a-brief-introduction-to-vectors-2">
-
-<ul>
-<li>We can also perform mathematical operations on every value in the <code>vector</code> with <em>one command</em></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x + 1
-sqrt(x)
-log2(x)</pre>
-
-<h3>This is one of the great strengths of <code>R</code>!</h3>
-
-</article></slide><slide class=''><hgroup><h2>A Brief Introduction To Vectors</h2></hgroup><article  id="a-brief-introduction-to-vectors-3">
-
-<ul>
-<li>In <code>R</code>, everything is a vector</li>
-<li>A key property of a vector is it&#39;s <code>length</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>length(x)</pre>
-
-<ul>
-<li>A single value in <code>R</code> is considered a vector of length 1</li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types">
-
-<ul>
-<li><em>Atomic Vectors</em> are the building blocks for everything in <code>R</code></li>
-<li>There are four main types</li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types </h2><h3> Logical Vectors</h3></hgroup><article  id="the-4-atomic-vector-types-logical-vectors">
-
-<ol>
-<li><strong>logical</strong></li>
-</ol>
-
-<p>Can only hold the values <code>TRUE</code> or <code>FALSE</code></p>
-
-<pre class = 'prettyprint lang-r'>logi_vec &lt;- c(TRUE, TRUE, FALSE)
-print(logi_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types </h2><h3> Integer Vectors</h3></hgroup><article  id="the-4-atomic-vector-types-integer-vectors">
-
-<ol>
-<li>logical</li>
-<li><strong>integer</strong></li>
-</ol>
-
-<p>Useful for counts, ranks or indexing positions (e.g. column 3; nucleotide 254731)</p>
-
-<pre class = 'prettyprint lang-r'>int_vec &lt;- 1:5
-print(int_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types </h2><h3> Double (i.e. Double Precision) Vectors</h3></hgroup><article  id="the-4-atomic-vector-types-double-i.e.-double-precision-vectors">
-
-<ol>
-<li>logical</li>
-<li>integer</li>
-<li><strong>double</strong></li>
-</ol>
-
-<p>Often (&amp; <em>lazily</em>) referred to as numeric</p>
-
-<pre class = 'prettyprint lang-r'>dbl_vec &lt;- c(0.618, 1.414, 2)
-print(dbl_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types </h2><h3> Character Vectors</h3></hgroup><article  id="the-4-atomic-vector-types-character-vectors">
-
-<ol>
-<li>integer</li>
-<li>logical</li>
-<li>double</li>
-<li><strong>character</strong></li>
-</ol>
-
-<pre class = 'prettyprint lang-r'>char_vec &lt;- c(&quot;blue&quot;, &quot;red&quot;, &quot;green&quot;)
-print(char_vec)</pre>
-
-<pre >## [1] &quot;blue&quot;  &quot;red&quot;   &quot;green&quot;</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-1">
-
-<p>These are the basic building blocks for all <code>R</code> objects</p>
-
-<ol>
-<li>logical</li>
-<li>integer</li>
-<li>double</li>
-<li>character</li>
-</ol>
-
-<ul>
-<li>Many other vector types built on these</li>
-<li>There are two more rare types we&#39;ll ignore: <code>complex</code> &amp; <code>raw</code></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-2">
-
-<p>To find what type of vector we have</p>
-
-<pre class = 'prettyprint lang-r'>typeof(char_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-3">
-
-<h3>Importantly: <em>Every element of a vector is of the same type</em></h3>
-
-<p>For example, if there is one number amongst some character values, it will also be <em>coerced</em> to a character</p>
-
-<pre class = 'prettyprint lang-r'>simp_vec &lt;- c(742, &quot;Evergreen&quot;, &quot;Terrace&quot;)
-simp_vec</pre>
-
-<p>Notice how the <code>742</code> now has quotation marks</p>
-
-<pre class = 'prettyprint lang-r'>typeof(simp_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-4">
-
-<h3>Can numbers be coerced to characters?</h3>
-
-<h3>Can characters be coerced to numbers</h3>
-
-<pre class = 'prettyprint lang-r'>as.numeric(simp_vec)</pre>
-
-<p>You will see this error many times&#8230;</p>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-5">
-
-<p>Vectors can be coerced up the hierarchy with no information loss</p>
-
-<ul>
-<li><code>logical</code> \(\rightarrow\) <code>integer</code> \(\rightarrow\) <code>numeric</code> \(\rightarrow\) <code>character</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>as.integer(logi_vec)
-as.character(logi_vec)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The 4 Atomic Vector Types</h2></hgroup><article  id="the-4-atomic-vector-types-6">
-
-<p>Information will be lost going the other way</p>
-
-<pre class = 'prettyprint lang-r'>as.integer(dbl_vec)
-as.logical(c(2, 1, 0))</pre>
-
-</article></slide><slide class=''><hgroup><h2>Named Vectors</h2></hgroup><article  id="named-vectors">
-
-<ul>
-<li>We can specify a name for each element of a vector</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>names(x) &lt;- c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;)
-x</pre>
-
-<ul>
-<li>Notice that the names form a <code>character</code> vector</li>
-</ul>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Subsetting Vectors</h2></hgroup><article  id="subsetting-vectors">
-
-</article></slide><slide class=''><hgroup><h2>Subsetting Vectors</h2></hgroup><article  id="subsetting-vectors-1">
-
-<ul>
-<li>The elements of a vector can be called using <code>[]</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x[2]
-x[c(1, 3)]</pre>
-
-</article></slide><slide class=''><hgroup><h2>Subsetting Vectors</h2></hgroup><article  id="subsetting-vectors-2">
-
-<ul>
-<li>Double brackets (<code>[[]]</code>) can be used to return <strong>single elements</strong> only</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>x[[2]]</pre>
-
-<ul>
-<li>If you tried <code>x[[c(1,3)]]</code> you would receive an error message</li>
-<li>Note that the names were also not returned by this method</li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Subsetting Vectors</h2></hgroup><article  id="subsetting-vectors-3">
-
-<p>If a vector has <code>names</code> attributes, we can call values by name</p>
-
-<pre class = 'prettyprint lang-r'>x[c(&quot;a&quot;, &quot;c&quot;)]
-x[[&quot;b&quot;]]</pre>
-
-<ol>
-<li>Using <code>[]</code> returned the vector with the identical structure</li>
-<li>Using <code>[[]]</code> removed the <code>attributes</code> &amp; just gave the value</li>
-</ol>
-
-</article></slide><slide class=''><hgroup><h2>Subsetting Vectors</h2></hgroup><article  id="subsetting-vectors-4">
-
-<h3>Discussion Question</h3>
-
-<p><strong>Is it better to call by position, or by name?</strong></p>
-
-<p>Things to consider:</p>
-
-<ul>
-<li>Which is easier to read?</li>
-<li>Which is more robust to undocumented changes in an object?</li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Vector Operations</h2></hgroup><article  id="vector-operations">
-
-<p>We can combine the above logical test and subsetting</p>
-
-<pre class = 'prettyprint lang-r'>dbl_vec
-dbl_vec &gt; 1
-dbl_vec[dbl_vec &gt; 1]</pre>
-
-</article></slide><slide class=''><hgroup><h2>Vector Operations</h2></hgroup><article  id="vector-operations-1">
-
-<p>An additional logical test: <code>%in%</code><br/>(read as: &quot;<em>is in</em>&quot;)</p>
-
-<pre class = 'prettyprint lang-r'>dbl_vec %in% int_vec</pre>
-
-<p>Returns <code>TRUE/FALSE</code> for each value in <code>dbl_vec</code> if it <strong>is in</strong> or <strong>is not in</strong> <code>int_vec</code></p>
-
-<p>NB: <code>int_vec</code> was coerced silently to a <code>double</code> vector</p>
-
-</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
-
-<div class="footer" style="text-align:center;width:25%">
-<p><a href='https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/' title=''>Home</a></p></div></article></slide>
+<pre class = 'prettyprint lang-r'>merged &lt;- data_frame(entrezgene = entrezIDs) %&gt;%
+  left_join(results)</pre></article></slide>
 
 
   <slide class="backdrop"></slide>

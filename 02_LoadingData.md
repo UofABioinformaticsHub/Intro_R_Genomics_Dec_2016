@@ -480,6 +480,7 @@ After we've edited a file, we might wish to export it
 - Can export `.csv`, `.txt`, `.tsv` etc
 - Individual `R` objects can be exported using `write_rds()`
 
+---
 
 <div class="footer" style="text-align:center;width:25%">
 [Home](https://uofabioinformaticshub.github.io/Intro_R_Genomics_Dec_2016/)

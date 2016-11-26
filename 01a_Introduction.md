@@ -189,7 +189,7 @@ abs(-1)
 ## Creating Objects in R
 
 - In `R` we can save objects and give them a name
-- We type the desired name, folowed by `<-`, then the value
+- We type the desired name, followed by `<-`, then the value
 
 
 ```r
@@ -252,7 +252,7 @@ print(x)
 
 ## Using R objects
 
-- We can now pass this value to any function, or do math on it
+- We can now pass this value to any function, or do mathematical operations on it
 
 
 ```r
