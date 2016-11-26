@@ -1,24 +1,8 @@
----
-title: "3 - Data Manipulation"
-subtitle: "BioinfoSummer Satellite R Workshop"
-author: "Steve Pederson"
-date: "27 November 2016"
-output: 
-  ioslides_presentation:
-    css: custom.css
-    fig_caption: yes
-    keep_md: yes
-    logo: images/UoA_logo_col_vert.png
-    widescreen: yes
----
+# Data Manipulation
+Steve Pederson  
+27 November 2016  
 
-```{r, loadPackages, echo = FALSE, include = FALSE}
-library(knitr)
-opts_chunk$set(echo = TRUE, include = TRUE, 
-               warning = FALSE, message = FALSE, 
-               out.width = 800, fig.align = "center",
-               results = 'hide')
-```
+
 
 # Data Manipulation
 
@@ -47,7 +31,8 @@ We'll cover:
 - Add the following as the first three lines
 - A common (and good) practice is to start a script by loading the packages
 
-```{r}
+
+```r
 library(readr)
 library(dplyr)
 library(tibble)
@@ -69,7 +54,8 @@ library(tibble)
 
 ## Logical Tests
 
-```{r, results='hide'}
+
+```r
 x <- 1:10
 x == 5
 x != 5
@@ -84,7 +70,8 @@ x > 5 | x == 2
 
 - We could also find the _positions of the values_ which are `TRUE` in the previous tests
 
-```{r}
+
+```r
 which(x >5)
 ```
 
@@ -93,14 +80,16 @@ which(x >5)
 
 Data for this session:
 
-```{r, results='hide'}
+
+```r
 data <- read_csv("data/comments.csv", comment = "#")
 data
 ```
 
-So we have a `r nrow(data)` x `r ncol(data)` `data frame`
+So we have a 32 x 6 `data frame`
 
-```{r, results='hide'}
+
+```r
 dim(data)
 nrow(data)
 ncol(data)
@@ -112,9 +101,18 @@ The first row is the row names from the original file.
 
 __How can we remove this column?__
 
+(We could use `data[,2:5]`)
+
+## Starting with `dplyr` | The `select()` function
+
+The first row is the row names from the original file.
+
+__How can we remove this column?__
+
 The function `select()` allows you to select columns by name
 
-```{r}
+
+```r
 select(data, gender, name, weight, height, transport)
 ```
 
@@ -126,7 +124,8 @@ __How can we remove this column?__
 
 The function `select()` allows you to select columns by name (good)
 
-```{r}
+
+```r
 select(data, gender, name, weight, height, transport)
 ```
 
@@ -134,7 +133,8 @@ select(data, gender, name, weight, height, transport)
 
 Or by position (not so good)
 
-```{r}
+
+```r
 select(data, 2:6)
 ```
 
@@ -144,13 +144,15 @@ __Discuss: What are the merits of calling by name or position?__
 
 - We can also remove columns using the minus (`-`) sign
 
-```{r}
+
+```r
 select(data, -X1)
 ```
 
 - We can remove any other columns by name
 
-```{r}
+
+```r
 select(data, -transport)
 ```
 
@@ -160,7 +162,8 @@ The `select()` function has a few bonus functions:
 
 - `starts_with()`, `ends_with()`, `contains()`, `one_of()` and `everything()`
 
-```{r}
+
+```r
 select(data, ends_with("t"))
 select(data, contains("eig"))
 ```
@@ -171,7 +174,8 @@ __So far, we haven't changed the original object__
 
 We can overwrite this anytime (sometimes by accident)
 
-```{r}
+
+```r
 data <- select(data, -X1)
 data
 ```
@@ -184,14 +188,16 @@ data
 
 We can use our logical tests to filter the data
 
-```{r}
+
+```r
 filter(data, transport == "car")
 filter(data, transport == "car", gender == "female")
 ```
 
 We can sort on one or more columns
 
-```{r}
+
+```r
 arrange(data, weight)
 arrange(data, desc(weight))
 arrange(data, transport, height)
@@ -206,19 +212,19 @@ arrange(data, transport, height)
 
 -----
 
-```{r, echo=FALSE, include=TRUE, results='asis'}
-include_graphics("images/MagrittePipe.jpg")
-```
+<img src="images/MagrittePipe.jpg" width="800" style="display: block; margin: auto;" />
 
 ## Combining Functions
 
-```{r}
+
+```r
 data %>% filter(transport == "bike")
 ```
 
 And then sort based on `weight`
 
-```{r}
+
+```r
 data %>% filter(transport == "bike") %>% arrange(weight)
 ```
 
@@ -230,7 +236,8 @@ Each function in `dplyr` takes a `data.frame` as the first argument
 
 The `magrittr` pipes our (modified) `data.frame` into the next function as the first argument
 
-```{r}
+
+```r
 ?select
 ```
 
@@ -239,19 +246,22 @@ The `magrittr` pipes our (modified) `data.frame` into the next function as the f
 
 We can add extra columns using `mutate()`
 
-```{r}
+
+```r
 data %>% mutate(height_m = height/100)
 ```
 
 Once we've added a column, we can refer to it by name
 
-```{r}
+
+```r
 data %>% mutate(height_m = height/100, BMI = weight / height_m^2)
 ```
 
 We can also overwrite existing columns
 
-```{r}
+
+```r
 data %>% mutate(height = height/100)
 ```
 
@@ -261,13 +271,15 @@ __Have we changed the original `data.frame`?__
 
 Can use the function `rename()`
 
-```{r}
+
+```r
 data %>% rename(height_cm = height)
 ```
 
 Now we can get crazy
 
-```{r}
+
+```r
 data %>%
   rename(height_cm = height) %>%
   mutate(height_m = height_cm/100,
@@ -279,11 +291,13 @@ data %>%
 
 Again, this is where `dplyr` really makes it easy.
 
-```{r}
+
+```r
 data %>% summarise(mean(weight), mean(height))
 ```
 
-```{r}
+
+```r
 data %>% summarise_each(funs(mean, sd), ends_with("ght"))
 ```
 
@@ -291,7 +305,8 @@ data %>% summarise_each(funs(mean, sd), ends_with("ght"))
 
 We can group categorical variables by their levels
 
-```{r}
+
+```r
 data %>%
   group_by(gender) %>%
   summarise_each(funs(mean), ends_with("ght"))
@@ -301,7 +316,8 @@ data %>%
 
 Or combinations of levels
 
-```{r}
+
+```r
 data %>%
   group_by(gender, transport) %>%
   summarise_each(funs(mean), ends_with("ght"))
@@ -314,7 +330,8 @@ We can use any function that spits out a single value
 
 ## Getting Group Summaries
 
-```{r}
+
+```r
 data %>%
   group_by(gender, transport) %>%
   summarise(mn_weight = mean(weight),
@@ -335,17 +352,20 @@ This dataset is in what we refer to as `wide` form
 
 ## Reshaping your data | From Wide to Long
 
-```{r}
+
+```r
 library(reshape2)
 ```
 
-```{r}
+
+```r
 wideData <- read_csv("data/wide.csv")
 ```
 
 This is a time course for two treatments
 
-```{r}
+
+```r
 melt(wideData, id.vars = c("Name", "Tx"))
 ```
 
@@ -355,7 +375,8 @@ Many functions require data to be in this format
 
 We don't need to leave those names as `variable` and `value`
 
-```{r}
+
+```r
 wideData %>%
   melt(id.vars = c("Name", "Tx"),
        variable.name = "Day", 
@@ -372,7 +393,8 @@ wideData %>%
 
 1 __How could we get means for each treatment/day from the original data?__
 
-```{r}
+
+```r
 wideData %>% 
   group_by(Tx) %>%
   summarise_each(funs(mean), starts_with("day"))
@@ -380,7 +402,8 @@ wideData %>%
 
 2 __How can we get the same from the data after "melting"?__
 
-```{r}
+
+```r
 wideData %>%
   melt(id.vars = c("Name", "Tx"),
        variable.name = "Day", 
@@ -393,7 +416,8 @@ wideData %>%
 
 Let's save that last summary `data.frame`
 
-```{r}
+
+```r
 wideMeans <- wideData %>%
   melt(id.vars = c("Name", "Tx"),
        variable.name = "Day", 
@@ -409,7 +433,8 @@ We can change from long to wide using the `formula` syntax
 - "`~`" stands for _is a function of_, or _depends on_
 - The function `dcast` uses it to define rows on the LHS and columns on the RHS
 
-```{r}
+
+```r
 dcast(wideMeans, Tx~Day)
 dcast(wideMeans, Day~Tx)
 ```
@@ -418,18 +443,19 @@ dcast(wideMeans, Day~Tx)
 
 Would we ever use both?
 
-```{r}
+
+```r
 pcr <- read_csv("data/PCR.csv")
 ```
 
 Here we have 3 genes being measured in 2 cell types, across 3 time-points
 
 The first part is easy:
-```{r}
+
+```r
 melt(pcr, id.vars = "Gene", variable.name = "CellType", value.name = "Ct")
 ```
 
-# Data Visualisation (using ggplot2)
 
 ---
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>3 - Data Manipulation</title>
+  <title>Data Visualisation</title>
 
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -26,7 +26,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: '3 - Data Manipulation',
+                title: 'Data Visualisation',
                         subtitle: 'BioinfoSummer Satellite R Workshop',
                 useBuilds: true,
         usePrettify: true,
@@ -111,371 +111,188 @@
           </hgroup>
   </slide>
 
-<slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Data Manipulation</h2></hgroup><article  id="data-manipulation">
+<slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Data Visualisation </h2><h3> Using the Package <code>ggplot2</code></h3></hgroup><article  id="data-visualisation-using-the-package-ggplot2">
 
-</article></slide><slide class=''><hgroup><h2>Data Manipulation</h2></hgroup><article  id="data-manipulation-1">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code></h2></hgroup><article  id="the-package-ggplot2">
 
-<p>Also known as <em>data munging</em></p>
+<p><code>R</code> has numerous plotting functions in the base package <code>graphics</code></p>
 
-<p>We&#39;ll cover:</p>
+<pre class = 'prettyprint lang-r'>?plot
+?boxplot
+?hist</pre>
+
+<p><strong>Go to the bottom of each help page and copy a few lines</strong></p>
+
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code></h2></hgroup><article  id="the-package-ggplot2-1">
 
 <ul>
-<li>Working with <code>data.frame</code> objects (or <code>tibbles</code>)</li>
-<li><code>SQL-</code> and <code>Excel-</code>like functions in <code>dplyr</code></li>
-<li>Changing from wide to long form using <code>reshape2</code></li>
+<li><code>ggplot2</code> gives much more flexibility and power</li>
+<li>Has unique syntax and approach</li>
+<li>We add layers of plotting information</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Data Manipulation</h2></hgroup><article  id="data-manipulation-2">
+<pre class = 'prettyprint lang-r'>library(ggplot2)</pre>
 
-<h3>Why?</h3>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> aesthetics</h3></hgroup><article  id="the-package-ggplot2-aesthetics">
+
+<p>The main function is <code>ggplot()</code></p>
 
 <ul>
-<li>Often dealing with summary type information
-
-<ul>
-<li>Lists of differentially expressed genes</li>
-<li>Summaries of read counts across <code>fastq</code> libraries</li>
-</ul></li>
-<li>I spend more time doing this than actual &quot;genomics&quot;</li>
+<li>In this first stage we set the plotting aesthetics using <code>aes()</code></li>
+<li>Defines what is plotted on which axis, what defines the colour/shape etc.</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Data Manipulation </h2><h3> Loading The Packages</h3></hgroup><article  id="data-manipulation-loading-the-packages">
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height))</pre>
 
-<ul>
-<li>Create a new script file called <code>Using_dplyr.R</code></li>
-<li>Add the following as the first three lines</li>
-<li>A common (and good) practice is to start a script by loading the packages</li>
-</ul>
+<p>No data will be plotted. We get the plot area only&#8230;</p>
 
-<pre class = 'prettyprint lang-r'>library(readr)
-library(dplyr)
-library(tibble)</pre>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> geometry</h3></hgroup><article  id="the-package-ggplot2-geometry">
 
-</article></slide><slide class=''><hgroup><h2>Data Manipulation </h2><h3> Loading The Packages</h3></hgroup><article  id="data-manipulation-loading-the-packages-1">
+<p>After defining the plot aesthetics, we add the geometry using various <code>geom_...()</code> functions</p>
 
-<ul>
-<li>The package <code>dplyr</code> has functions to work specifically with <code>data.frame</code> objects</li>
-<li>Works optimally with <code>local data frame</code> aka <code>tbl_df</code> objects</li>
-<li>Have just been renamed <code>tibble</code> objects</li>
-</ul>
+<p>We tell the first line that &quot;more is to come&quot; by adding a <code>+</code> symbol at the end</p>
 
-</article></slide><slide class=''><hgroup><h2>But First </h2><h3> Logical Tests</h3></hgroup><article  id="but-first-logical-tests">
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point()</pre>
 
-<ul>
-<li>Is Equal To: <code>==</code></li>
-<li>Not equal - <code>!=</code></li>
-<li>OR - <code>|</code></li>
-<li>Less than <code>&lt;</code></li>
-<li>Less than or equal <code>&lt;=</code></li>
-</ul>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> geometry</h3></hgroup><article  id="the-package-ggplot2-geometry-1">
 
-</article></slide><slide class=''><hgroup><h2>Logical Tests</h2></hgroup><article  id="logical-tests">
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 
-<pre class = 'prettyprint lang-r'>x &lt;- 1:10
-x == 5
-x != 5
-x &gt; 5
-x &gt; 5 | x == 2</pre>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> aesthetics</h3></hgroup><article  id="the-package-ggplot2-aesthetics-1">
 
-<ul>
-<li><code>R</code> also recognises the symbol <code>&amp;</code> for <code>AND</code></li>
-<li>Not very relevant for <code>dplyr</code></li>
-</ul>
+<p>There are numerous aesthetics available for <code>geom_point()</code></p>
 
-</article></slide><slide class=''><hgroup><h2>Logical Tests</h2></hgroup><article  id="logical-tests-1">
+<pre class = 'prettyprint lang-r'>?geom_point</pre>
 
-<ul>
-<li>We could also find the <em>positions of the values</em> which are <code>TRUE</code> in the previous tests</li>
-</ul>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height, colour = transport)) +
+  geom_point()</pre>
 
-<pre class = 'prettyprint lang-r'>which(x &gt;5)</pre>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height, colour = transport, shape = gender)) +
+  geom_point()</pre>
 
-</article></slide><slide class=''><hgroup><h2>Starting with <code>dplyr</code></h2></hgroup><article  id="starting-with-dplyr">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> aesthetics</h3></hgroup><article  id="the-package-ggplot2-aesthetics-2">
 
-<p>Data for this session:</p>
+<p>We can put the general aesthetics in <code>ggplot()</code>, with the <code>geom_point()</code> specific ones in that line</p>
 
-<pre class = 'prettyprint lang-r'>data &lt;- read_csv(&quot;data/comments.csv&quot;, comment = &quot;#&quot;)
-data</pre>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender))</pre>
 
-<p>So we have a 32 x 6 <code>data frame</code></p>
+<p>Aesthetics set outside of <code>aes()</code> are general across all points</p>
 
-<pre class = 'prettyprint lang-r'>dim(data)
-nrow(data)
-ncol(data)</pre>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender), size = 4)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Starting with <code>dplyr</code> </h2><h3> The <code>select()</code> function</h3></hgroup><article  id="starting-with-dplyr-the-select-function">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> adding multiple geoms</h3></hgroup><article  id="the-package-ggplot2-adding-multiple-geoms">
 
-<p>The first row is the row names from the original file.</p>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender)) +
+  geom_smooth()</pre>
 
-<p><strong>How can we remove this column?</strong></p>
+<p>This defaults to a <code>loess</code> fit</p>
 
-<p>The function <code>select()</code> allows you to select columns by name</p>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender)) +
+  geom_smooth(method = &quot;lm&quot;, formula = y~x, se = FALSE)</pre>
 
-<pre class = 'prettyprint lang-r'>select(data, gender, name, weight, height, transport)</pre>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> labels</h3></hgroup><article  id="the-package-ggplot2-labels">
 
-</article></slide><slide class=''><hgroup><h2>Starting with <code>dplyr</code> </h2><h3> The <code>select()</code> function</h3></hgroup><article  id="starting-with-dplyr-the-select-function-1">
+<p>Axis and legend labels can be added using <code>labs()</code></p>
 
-<p>The first row is the row names from the original file.</p>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender)) +
+  geom_smooth(method = &quot;lm&quot;, formula = y~x, se = FALSE) +
+  labs(x = &quot;Weight (kg)&quot;, y = &quot;Height (cm)&quot;, 
+       shape = &quot;Gender&quot;, colour = &quot;Transport&quot;)</pre>
 
-<p><strong>How can we remove this column?</strong></p>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> facets</h3></hgroup><article  id="the-package-ggplot2-facets">
 
-<p>The function <code>select()</code> allows you to select columns by name (good)</p>
+<p>(This is my favourite feature)</p>
 
-<pre class = 'prettyprint lang-r'>select(data, gender, name, weight, height, transport)</pre>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = weight, y = height)) +
+  geom_point(aes(colour = transport, shape = gender)) +
+  geom_smooth(method = &quot;lm&quot;, formula = y~x, se = FALSE) +
+  labs(x = &quot;Weight (kg)&quot;, y = &quot;Height (cm)&quot;, 
+       shape = &quot;Gender&quot;, colour = &quot;Transport&quot;) +
+  facet_wrap(~gender) </pre>
 
-</article></slide><slide class=''><hgroup><h2>Starting with <code>dplyr</code> </h2><h3> The <code>select()</code> function</h3></hgroup><article  id="starting-with-dplyr-the-select-function-2">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> Different geoms</h3></hgroup><article  id="the-package-ggplot2-different-geoms">
 
-<p>Or by position (not so good)</p>
+<p>Enter <code>geom_</code> in the Console followed by the <code>tab</code> key</p>
 
-<pre class = 'prettyprint lang-r'>select(data, 2:6)</pre>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = height, fill = gender)) +
+  geom_density(alpha = 0.5)</pre>
 
-<p><strong>Discuss: What are the merits of calling by name or position?</strong></p>
+<pre class = 'prettyprint lang-r'>ggplot(data, aes(x = gender, y =height, fill = gender)) +
+  geom_boxplot()</pre>
 
-</article></slide><slide class=''><hgroup><h2>Starting with <code>dplyr</code> </h2><h3> The <code>select()</code> function</h3></hgroup><article  id="starting-with-dplyr-the-select-function-3">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> <code>geom_bar()</code></h3></hgroup><article  id="the-package-ggplot2-geom_bar">
 
-<ul>
-<li>We can also remove columns using the minus (<code>-</code>) sign</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>select(data, -X1)</pre>
-
-<ul>
-<li>We can remove any other columns by name</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>select(data, -transport)</pre>
-
-</article></slide><slide class=''><hgroup><h2>The <code>select()</code> function</h2></hgroup><article  id="the-select-function">
-
-<p>The <code>select()</code> function has a few bonus functions:</p>
-
-<ul>
-<li><code>starts_with()</code>, <code>ends_with()</code>, <code>contains()</code>, <code>one_of()</code> and <code>everything()</code></li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>select(data, ends_with(&quot;t&quot;))
-select(data, contains(&quot;eig&quot;))</pre>
-
-</article></slide><slide class=''><hgroup><h2>The <code>select()</code> function</h2></hgroup><article  id="the-select-function-1">
-
-<p><strong>So far, we haven&#39;t changed the original object</strong></p>
-
-<p>We can overwrite this anytime (sometimes by accident)</p>
-
-<pre class = 'prettyprint lang-r'>data &lt;- select(data, -X1)
-data</pre>
-
-<ul>
-<li><p>Now we have removed the meaningless columns</p></li>
-<li><p>To get the column back, we just need to reload the <code>.csv</code> file using our command we&#39;ve saved in the script</p></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Using <code>filter()</code> and <code>arrange()</code></h2></hgroup><article  id="using-filter-and-arrange">
-
-<p>We can use our logical tests to filter the data</p>
-
-<pre class = 'prettyprint lang-r'>filter(data, transport == &quot;car&quot;)
-filter(data, transport == &quot;car&quot;, gender == &quot;female&quot;)</pre>
-
-<p>We can sort on one or more columns</p>
-
-<pre class = 'prettyprint lang-r'>arrange(data, weight)
-arrange(data, desc(weight))
-arrange(data, transport, height)</pre>
-
-</article></slide><slide class=''><hgroup><h2>Combining Functions</h2></hgroup><article  id="combining-functions">
-
-<ul>
-<li>This is where <code>dplyr</code> steps up a gear</li>
-<li>We can chain functions together using <code>%&gt;%</code></li>
-<li>This behaves like a <code>|</code> in the bash shell</li>
-<li>Known as the <code>magrittr</code></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
-
-<p><img src="images/MagrittePipe.jpg" width="800" style="display: block; margin: auto;" /></p>
-
-</article></slide><slide class=''><hgroup><h2>Combining Functions</h2></hgroup><article  id="combining-functions-1">
-
-<pre class = 'prettyprint lang-r'>data %&gt;% filter(transport == &quot;bike&quot;)</pre>
-
-<p>And then sort based on <code>weight</code></p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% filter(transport == &quot;bike&quot;) %&gt;% arrange(weight)</pre>
-
-<p>There is <strong>no limit</strong> to the number of functions you can chain together</p>
-
-</article></slide><slide class=''><hgroup><h2>Combining Functions </h2><h3> For the technically minded</h3></hgroup><article  id="combining-functions-for-the-technically-minded">
-
-<p>Each function in <code>dplyr</code> takes a <code>data.frame</code> as the first argument</p>
-
-<p>The <code>magrittr</code> pipes our (modified) <code>data.frame</code> into the next function as the first argument</p>
-
-<pre class = 'prettyprint lang-r'>?select</pre>
-
-</article></slide><slide class=''><hgroup><h2>Adding extra columns</h2></hgroup><article  id="adding-extra-columns">
-
-<p>We can add extra columns using <code>mutate()</code></p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% mutate(height_m = height/100)</pre>
-
-<p>Once we&#39;ve added a column, we can refer to it by name</p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% mutate(height_m = height/100, BMI = weight / height_m^2)</pre>
-
-<p>We can also overwrite existing columns</p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% mutate(height = height/100)</pre>
-
-<p><strong>Have we changed the original <code>data.frame</code>?</strong></p>
-
-</article></slide><slide class=''><hgroup><h2>Changing Column Names</h2></hgroup><article  id="changing-column-names">
-
-<p>Can use the function <code>rename()</code></p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% rename(height_cm = height)</pre>
-
-<p>Now we can get crazy</p>
+<p>We can summarise our data, then <em>pipe</em> into <code>ggplot()</code></p>
 
 <pre class = 'prettyprint lang-r'>data %&gt;%
-  rename(height_cm = height) %&gt;%
-  mutate(height_m = height_cm/100,
-         BMI = weight / height_m^2) %&gt;%
-  filter(BMI &gt; 25)</pre>
+  group_by(transport, gender) %&gt;%
+  summarise(mn_height = mean(height), sd_height = sd(height)) %&gt;%
+  ggplot(aes(x = transport, y = mn_height, fill = transport)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  facet_wrap(~gender) +
+  guides(fill =FALSE)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Getting Summaries</h2></hgroup><article  id="getting-summaries">
+<p>NB: <code>geom_bar()</code> requires <code>stat = &quot;identity&quot;</code></p>
 
-<p>Again, this is where <code>dplyr</code> really makes it easy.</p>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% summarise(mean(weight), mean(height))</pre>
-
-<pre class = 'prettyprint lang-r'>data %&gt;% summarise_each(funs(mean, sd), ends_with(&quot;ght&quot;))</pre>
-
-</article></slide><slide class=''><hgroup><h2>Getting Group Summaries</h2></hgroup><article  id="getting-group-summaries">
-
-<p>We can group categorical variables by their levels</p>
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> <code>geom_errorbar()</code></h3></hgroup><article  id="the-package-ggplot2-geom_errorbar">
 
 <pre class = 'prettyprint lang-r'>data %&gt;%
-  group_by(gender) %&gt;%
-  summarise_each(funs(mean), ends_with(&quot;ght&quot;))</pre>
+  group_by(transport, gender) %&gt;%
+  summarise(mn_height = mean(height), sd_height = sd(height)) %&gt;%
+  ggplot(aes(x = transport, y = mn_height, fill = transport)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  geom_errorbar(aes(ymin = mn_height - sd_height,
+                    ymax = mn_height + sd_height),
+                width = 0.6)+
+  facet_wrap(~gender) +
+  guides(fill =FALSE)</pre>
 
-</article></slide><slide class=''><hgroup><h2>Getting Group Summaries</h2></hgroup><article  id="getting-group-summaries-1">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> facets</h3></hgroup><article  id="the-package-ggplot2-facets-1">
 
-<p>Or combinations of levels</p>
+<p><strong>How could we get histograms for both <code>weight</code> and <code>height</code> using facets?</strong></p>
+
+<ul>
+<li>The geom to use is <code>geom_histogram()</code></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> facets</h3></hgroup><article  id="the-package-ggplot2-facets-2">
+
+<p><strong>How could we get histograms for both <code>weight</code> and <code>height</code> using facets?</strong></p>
 
 <pre class = 'prettyprint lang-r'>data %&gt;%
-  group_by(gender, transport) %&gt;%
-  summarise_each(funs(mean), ends_with(&quot;ght&quot;))</pre>
+  melt(id.vars = c(&quot;gender&quot;, &quot;name&quot;, &quot;transport&quot;)) %&gt;%
+  ggplot(aes(x = value, fill = variable)) +
+  geom_histogram(bins = 10, colour = &quot;black&quot;) +
+  facet_wrap(~variable, scales = &quot;free_x&quot;) +
+  guides(fill = FALSE)</pre>
 
-<p>We can use any function that spits out a single value</p>
-
-<ul>
-<li><code>sd()</code>, <code>min()</code>, <code>median()</code></li>
-<li>Plus the function <code>n()</code></li>
-</ul>
-
-</article></slide><slide class=''><hgroup><h2>Getting Group Summaries</h2></hgroup><article  id="getting-group-summaries-2">
+</article></slide><slide class=''><hgroup><h2>The package <code>ggplot2</code> </h2><h3> facets</h3></hgroup><article  id="the-package-ggplot2-facets-3">
 
 <pre class = 'prettyprint lang-r'>data %&gt;%
-  group_by(gender, transport) %&gt;%
-  summarise(mn_weight = mean(weight),
-            mn_height = mean(height),
-            n = n())</pre>
+  melt(id.vars = c(&quot;gender&quot;, &quot;name&quot;, &quot;transport&quot;)) %&gt;%
+  ggplot(aes(x =gender, y = value, fill = gender)) +
+  geom_boxplot() +
+  facet_wrap(~variable, scales = &quot;free_y&quot;)</pre>
 
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Reshaping your data</h2></hgroup><article  id="reshaping-your-data">
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data</h2></hgroup><article  id="reshaping-your-data-1">
-
-<p>This dataset is in what we refer to as <code>wide</code> form</p>
+</article></slide><slide class=''><hgroup><h2>A Final Tip </h2><h3> Using themes</h3></hgroup><article  id="a-final-tip-using-themes">
 
 <ul>
-<li>We have a row of measurements for each individual</li>
-<li>The information is <em>structured around the individual</em></li>
-<li>In <code>long</code> form, the information is <em>structured around the measurement</em></li>
+<li><code>ggplot2</code> utilises themes to control the appearance of the plot</li>
+<li>To remove the grey background add <code>theme_bw()</code></li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2>Reshaping your data </h2><h3> From Wide to Long</h3></hgroup><article  id="reshaping-your-data-from-wide-to-long">
-
-<pre class = 'prettyprint lang-r'>library(reshape2)</pre>
-
-<pre class = 'prettyprint lang-r'>wideData &lt;- read_csv(&quot;data/wide.csv&quot;)</pre>
-
-<p>This is a time course for two treatments</p>
-
-<pre class = 'prettyprint lang-r'>melt(wideData, id.vars = c(&quot;Name&quot;, &quot;Tx&quot;))</pre>
-
-<p>Many functions require data to be in this format</p>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data </h2><h3> From Wide to Long</h3></hgroup><article  id="reshaping-your-data-from-wide-to-long-1">
-
-<p>We don&#39;t need to leave those names as <code>variable</code> and <code>value</code></p>
-
-<pre class = 'prettyprint lang-r'>wideData %&gt;%
-  melt(id.vars = c(&quot;Name&quot;, &quot;Tx&quot;),
-       variable.name = &quot;Day&quot;, 
-       value.name = &quot;Change&quot;) </pre>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data</h2></hgroup><article  id="reshaping-your-data-2">
-
-<ol>
-<li><strong>How could we get means for each treatment/day from the original data?</strong></li>
-<li><strong>How can we get the same from the data after &quot;melting&quot;?</strong></li>
-</ol>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data</h2></hgroup><article  id="reshaping-your-data-3">
-
-<p>1 <strong>How could we get means for each treatment/day from the original data?</strong></p>
-
-<pre class = 'prettyprint lang-r'>wideData %&gt;% 
-  group_by(Tx) %&gt;%
-  summarise_each(funs(mean), starts_with(&quot;day&quot;))</pre>
-
-<p>2 <strong>How can we get the same from the data after &quot;melting&quot;?</strong></p>
-
-<pre class = 'prettyprint lang-r'>wideData %&gt;%
-  melt(id.vars = c(&quot;Name&quot;, &quot;Tx&quot;),
-       variable.name = &quot;Day&quot;, 
-       value.name = &quot;Change&quot;) %&gt;%
-  group_by(Tx, Day) %&gt;%
-  summarise(mn_change = mean(Change))</pre>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data </h2><h3> From Long To Wide</h3></hgroup><article  id="reshaping-your-data-from-long-to-wide">
-
-<p>Let&#39;s save that last summary <code>data.frame</code></p>
-
-<pre class = 'prettyprint lang-r'>wideMeans &lt;- wideData %&gt;%
-  melt(id.vars = c(&quot;Name&quot;, &quot;Tx&quot;),
-       variable.name = &quot;Day&quot;, 
-       value.name = &quot;Change&quot;) %&gt;%
-  group_by(Tx, Day) %&gt;%
-  summarise(mn_change = mean(Change))</pre>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data </h2><h3> From Long To Wide</h3></hgroup><article  id="reshaping-your-data-from-long-to-wide-1">
-
-<p>We can change from long to wide using the <code>formula</code> syntax</p>
-
-<ul>
-<li>&quot;<code>~</code>&quot; stands for <em>is a function of</em>, or <em>depends on</em></li>
-<li>The function <code>dcast</code> uses it to define rows on the LHS and columns on the RHS</li>
-</ul>
-
-<pre class = 'prettyprint lang-r'>dcast(wideMeans, Tx~Day)
-dcast(wideMeans, Day~Tx)</pre>
-
-</article></slide><slide class=''><hgroup><h2>Reshaping your data </h2><h3> From Long To Wide</h3></hgroup><article  id="reshaping-your-data-from-long-to-wide-2">
-
-<p>Would we ever use both?</p>
-
-<pre class = 'prettyprint lang-r'>pcr &lt;- read_csv(&quot;data/PCR.csv&quot;)</pre>
-
-<p>Here we have 3 genes being measured in 2 cell types, across 3 time-points</p>
-
-<p>The first part is easy:</p>
-
-<pre class = 'prettyprint lang-r'>melt(pcr, id.vars = &quot;Gene&quot;, variable.name = &quot;CellType&quot;, value.name = &quot;Ct&quot;)</pre>
-
-</article></slide><slide class='segue dark nobackground level1'><hgroup class = 'auto-fadein'><h2>Data Visualisation (using ggplot2)</h2></hgroup><article  id="data-visualisation-using-ggplot2">
+<pre class = 'prettyprint lang-r'>data %&gt;%
+  melt(id.vars = c(&quot;gender&quot;, &quot;name&quot;, &quot;transport&quot;)) %&gt;%
+  ggplot(aes(x =gender, y = value, fill = gender)) +
+  geom_boxplot() +
+  facet_wrap(~variable, scales = &quot;free_y&quot;) +
+  theme_bw()</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 

@@ -29,9 +29,10 @@ __Which sheet do you think will be the most problematic to load?__
 ### Sheet 1
 
 - This is actually the type of format `R` loves to see
-- Simple column structure, with column and row names
-- No blank rows at the top or separating sub-tables
-- No blank columns
+    - Simple column structure, with column and row names
+    - No blank rows at the top or separating sub-tables
+    - No blank columns
+    - No merged cells
 
 ## Importing Data
 
@@ -123,16 +124,66 @@ head(toothData)
 
 __What were the differences between each method?__
 
+## Data Frame Objects
+
+- In a `data.frame` each column is a vector:
+    - Each column has a single type of data
+    - Different columns can be different types of data
+    
 ## Data Frame Objects | Factors
 
 - By default `R` assumes that a column of text is a categorical variable (i.e. a `factor`)
 - We can change this by un-checking the `stringsAsFactors` button during import
 
+## Data Frame Objects | Subsetting
+
+- We can use the square braces to select rows and columns `[row, column]`
+
+
+```r
+toothData[1:2,] # Select the first 2 rows, all columns
+toothData[1:5, 1] # The first 5 entries in the first column
+```
+
+## Data Frame Objects | Subsetting
+
+Because each column is a vector, we can use an alternative method (`$`)
+
+
+```r
+toothData$len #Print the entire column vector called 'len'
+toothData$len[1:5] # Now just the first 5 entries
+```
+
+## Data Frame Objects | Subsetting
+
+Calling by name:
+
+
+```r
+toothData[1:5, "len"]
+toothData$len[1:5] 
+```
+
+### When would you use either method?
+
+## Data Frame Objects | Subsetting
+
+One easy trap to fall into - forgetting the comma
+
+
+```r
+toothData["len"]
+toothData[["len"]]
+```
+
+
+
 # R Functions and Packages
 
 ## What have we really done?
 
-- In the above we called the `R` function `read.csv()` 
+- In the above section we called the `R` function `read.csv()` 
 - This is in the `utils` package which is one of the default packages
 - A package is just a collection of related functions, e.g. 
     - `median()` & `sd()` are in the `stats` package
